@@ -27,10 +27,14 @@ string cifrarCesar(const string& mensaje, int k) {
 
 int main() {
     string mensaje;
-    int clave = 3; 
+    int clave; 
 
     cout << "Ingrese un mensaje: ";
     getline(cin, mensaje);
+    
+    //Ingresar clave de desplazamiento para el descifrado.
+    cout << "Ingrese la clave (numero de desplazamiento): ";
+    cin >> clave;
 
     string resultado = cifrarCesar(mensaje, clave);
     cout << "Mensaje cifrado: " << resultado << endl;
