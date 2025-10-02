@@ -55,8 +55,15 @@ int main() {
     string mensaje;
     int clave; 
 
+    //Ingresamos un mensaje para cifrar
     cout << "Ingrese un mensaje: ";
     getline(cin, mensaje);
+
+    // Convertimos todo el mensaje original a mayúsculas
+    string originalMayus = mensaje;
+    for (char& c : originalMayus) {
+        c = toupper(c);
+    }
     
     //Ingresar clave de desplazamiento para el cifrado.
     cout << "Ingrese la clave (numero de desplazamiento): ";
@@ -65,8 +72,20 @@ int main() {
     string resultado = cifrarCesar(mensaje, clave);
     cout << "Mensaje cifrado: " << resultado << endl;
 
+  
+    string mensajeDescifrado = descifrarCesar(resultado, clave);
+    cout << "Mensaje descifrado: " << mensajeDescifrado << endl;
+
+    // Verificación
+    if (mensajeDescifrado == originalMayus) {
+        cout << "Verificacion exitosa: El mensaje original se recupero correctamente." << endl;
+    }
+    else {
+        cout << "Error: El mensaje descifrado no coincide con el original." << endl;
+    }
+
     return 0;
 }
 
-//Probando commit
+
 
