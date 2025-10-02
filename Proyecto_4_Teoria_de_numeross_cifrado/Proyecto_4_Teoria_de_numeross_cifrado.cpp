@@ -23,7 +23,33 @@ string cifrarCesar(const string& mensaje, int k) {
     }
 
     return cifrado;
+
 }
+
+// Función para descifrar usando el algoritmo de César
+string descifrarCesar(const string& mensajeCifrado, int k) {
+    string alfabeto = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    string descifrado = "";
+
+    for (char letra : mensajeCifrado) {
+        char letraMayus = toupper(letra);
+        size_t pos = alfabeto.find(letraMayus);
+
+        if (pos != string::npos) {
+            // Usamos suma con (longitud - k) para retroceder
+            int nuevaPos = (pos - k + alfabeto.length()) % alfabeto.length();
+            descifrado += alfabeto[nuevaPos];
+        }
+        else {
+            descifrado += letra;
+        }
+    }
+
+    return descifrado;
+}
+
+
+
 
 int main() {
     string mensaje;
