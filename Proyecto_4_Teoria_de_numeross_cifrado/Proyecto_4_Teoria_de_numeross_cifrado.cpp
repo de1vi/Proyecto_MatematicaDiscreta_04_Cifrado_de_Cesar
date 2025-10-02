@@ -32,7 +32,7 @@ int main() {
     cout << "Ingrese un mensaje: ";
     getline(cin, mensaje);
     
-    //Ingresar clave de desplazamiento para el descifrado.
+    //Ingresar clave de desplazamiento para el cifrado.
     cout << "Ingrese la clave (numero de desplazamiento): ";
     cin >> clave;
 
