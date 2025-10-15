@@ -1,91 +1,149 @@
 #include <iostream>
 #include <string>
+#include <cstdlib>
+#include <cmath>
 using namespace std;
 
-// Función para cifrar usando el algoritmo de César
-string cifrarCesar(const string& mensaje, int k) {
-    string alfabeto = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+string alfabeto = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:',.<>?/ ";
+
+// Función para calcular el MCD (Máximo Común Divisor)
+int mcd(int x, int y) {
+    while (y != 0) {
+        int temp = y;
+        y = x % y;
+        x = temp;
+    }
+    return x;
+}
+
+// Función para calcular el inverso modular de a respecto a m
+int inversoModular(int a, int m) {
+    a = a % m;
+    for (int x = 1; x < m; x++) {
+        if ((a * x) % m == 1)
+            return x;
+    }
+    return 1; 
+}
+
+
+string cifrarCesar(const string& mensaje, int a, int b, int mod) {
     string cifrado = "";
+    cout << "\n=========  PROCESO DE CIFRADO  =========\n";
 
     for (char letra : mensaje) {
-        char letraMayus = toupper(letra); 
-        size_t pos = alfabeto.find(letraMayus);
-
+        size_t pos = alfabeto.find(letra);
         if (pos != string::npos) {
-            // Aplicamos desplazamiento modular
-            int nuevaPos = (pos + k) % alfabeto.length();
+            int nuevaPos = (a * pos + b) % mod;
             cifrado += alfabeto[nuevaPos];
+            cout << "Caracter: '" << letra << "' (x=" << pos << ") => y=("
+                << a << "*" << pos << " + " << b << ") mod " << mod
+                << " = " << nuevaPos << " => '" << alfabeto[nuevaPos] << "'\n";
         }
         else {
-            // Si no es letra, se deja tal cual (espacios, números, etc)
             cifrado += letra;
         }
     }
-
+    cout << "============================================\n";
+    cout << "Mensaje cifrado final: " << cifrado << endl;
     return cifrado;
-
 }
 
-// Función para descifrar usando el algoritmo de César
-string descifrarCesar(const string& mensajeCifrado, int k) {
-    string alfabeto = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+string descifrarCesar(const string& mensajeCifrado, int a, int b, int mod) {
     string descifrado = "";
+    int a_inv = inversoModular(a, mod);
+
+    cout << "\n=========  PROCESO DE DESCIFRADO  =========\n";
+    cout << "Inverso modular de a (" << a << ") mod " << mod << " = " << a_inv << "\n";
 
     for (char letra : mensajeCifrado) {
-        char letraMayus = toupper(letra);
-        size_t pos = alfabeto.find(letraMayus);
-
+        size_t pos = alfabeto.find(letra);
         if (pos != string::npos) {
-            // Usamos suma con (longitud - k) para retroceder
-            int nuevaPos = (pos - k + alfabeto.length()) % alfabeto.length();
+            int nuevaPos = (a_inv * (pos - b + mod)) % mod;
             descifrado += alfabeto[nuevaPos];
+            cout << "Caracter: '" << letra << "' (y=" << pos << ") => x=("
+                << a_inv << "*(" << pos << "-" << b << ")) mod " << mod
+                << " = " << nuevaPos << " => '" << alfabeto[nuevaPos] << "'\n";
         }
         else {
             descifrado += letra;
         }
     }
-
+    cout << "==============================================\n";
+    cout << "Mensaje descifrado final: " << descifrado << endl;
     return descifrado;
 }
 
 
-
+void mostrarMenu() {
+    system("cls");
+    cout << "\n";
+    cout << "=====================================================\n";
+    cout << "           🔢  CIFRADO DE CESAR EXTENDIDO  🔢\n";
+    cout << "=====================================================\n";
+    cout << "   [1]  Cifrar mensaje\n";
+    cout << "   [2]  Descifrar ultimo mensaje\n";
+    cout << "   [3]  Salir\n";
+    cout << "=====================================================\n";
+    cout << "   Elige una opcion: ";
+}
 
 int main() {
-    string mensaje;
-    int clave; 
+    string mensaje, cifrado, descifrado;
+    int a, b;
+    int opcion = 0;
+    int mod = alfabeto.length();
 
-    //Ingresamos un mensaje para cifrar
-    cout << "Ingrese un mensaje: ";
-    getline(cin, mensaje);
+    do {
+        mostrarMenu();
+        cin >> opcion;
+        cin.ignore();
 
-    // Convertimos todo el mensaje original a mayúsculas
-    string originalMayus = mensaje;
-    for (char& c : originalMayus) {
-        c = toupper(c);
-    }
-    
-    //Ingresar clave de desplazamiento para el cifrado.
-    cout << "Ingrese la clave (numero de desplazamiento): ";
-    cin >> clave;
+        switch (opcion) {
+        case 1:
+            cout << "\nIngrese un mensaje: ";
+            getline(cin, mensaje);
 
-    string resultado = cifrarCesar(mensaje, clave);
-    cout << "Mensaje cifrado: " << resultado << endl;
+            // Validar valor de 'a'
+            do {
+                cout << "Ingrese el valor de a (numero primo o coprimo con " << mod << "): ";
+                cin >> a;
 
-  
-    string mensajeDescifrado = descifrarCesar(resultado, clave);
-    cout << "Mensaje descifrado: " << mensajeDescifrado << endl;
+                if (mcd(a, mod) != 1) {
+                    cout << "\n❌ Error: El valor de 'a' no es coprimo con " << mod << ".\n";
+                    cout << "   Intente con otro valor que NO sea multiplo de 7 ni de 13.\n\n";
+                }
 
-    // Verificación
-    if (mensajeDescifrado == originalMayus) {
-        cout << "Verificacion exitosa: El mensaje original se recupero correctamente." << endl;
-    }
-    else {
-        cout << "Error: El mensaje descifrado no coincide con el original." << endl;
-    }
+            } while (mcd(a, mod) != 1);
+
+            cout << "Ingrese el valor de b (desplazamiento): ";
+            cin >> b;
+            cin.ignore();
+
+            cifrado = cifrarCesar(mensaje, a, b, mod);
+            break;
+
+        case 2:
+            if (cifrado.empty()) {
+                cout << "\n⚠️  No hay mensaje cifrado aun.\n";
+            }
+            else {
+                descifrado = descifrarCesar(cifrado, a, b, mod);
+            }
+            break;
+
+        case 3:
+            cout << "\n👋 Gracias por usar el cifrador extendido. Hasta pronto!\n";
+            return 0;
+
+        default:
+            cout << "\n❌ Opcion invalida.\n";
+        }
+
+        cout << "\nPresione ENTER para continuar...";
+        cin.ignore();
+    } while (opcion != 3);
 
     return 0;
 }
-
-
-
